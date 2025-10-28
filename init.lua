@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.o.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.o.relativenumber = true
+vim.o.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = 'a'
@@ -219,6 +219,16 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- 🔹 Only load these mappings when in diff mode (e.g., during git mergetool)
+vim.api.nvim_create_autocmd('VimEnter', {
+  callback = function()
+    if vim.wo.diff then
+      vim.keymap.set('n', '<leader>l', ':diffget LOCAL<CR>', { desc = 'Get LOCAL changes' })
+      vim.keymap.set('n', '<leader>r', ':diffget REMOTE<CR>', { desc = 'Get REMOTE changes' })
+    end
+  end,
+})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -248,6 +258,45 @@ rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+
+  'ThePrimeagen/vim-be-good',
+  'sindrets/diffview.nvim',
+  'tpope/vim-fugitive',
+
+  {
+    'nvim-neo-tree/neo-tree.nvim',
+    branch = 'v3.x',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'MunifTanjim/nui.nvim',
+      'nvim-tree/nvim-web-devicons',
+    },
+    lazy = false, -- neo-tree will lazily load itself
+    config = function()
+      require('neo-tree').setup {
+        filesystem = {
+          follow_current_file = {
+            enabled = true,
+          },
+        },
+      }
+
+      -- Auto-open Neo-tree when Neovim starts
+      vim.api.nvim_create_autocmd('VimEnter', {
+        callback = function(data)
+          if vim.fn.isdirectory(data.file) ~= 0 then
+            require('neo-tree.command').execute { source = 'filesystem', dir = data.file }
+          else
+            require('neo-tree.command').execute {
+              action = 'show',
+              source = 'filesystem',
+              reveal = true,
+            }
+          end
+        end,
+      })
+    end,
+  },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
