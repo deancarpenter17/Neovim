@@ -258,7 +258,7 @@ rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
-
+  'tpope/vim-commentary',
   'ThePrimeagen/vim-be-good',
   'sindrets/diffview.nvim',
   'tpope/vim-fugitive',
@@ -282,19 +282,19 @@ require('lazy').setup({
       }
 
       -- Auto-open Neo-tree when Neovim starts
-      vim.api.nvim_create_autocmd('VimEnter', {
-        callback = function(data)
-          if vim.fn.isdirectory(data.file) ~= 0 then
-            require('neo-tree.command').execute { source = 'filesystem', dir = data.file }
-          else
-            require('neo-tree.command').execute {
-              action = 'show',
-              source = 'filesystem',
-              reveal = true,
-            }
-          end
-        end,
-      })
+      -- vim.api.nvim_create_autocmd('VimEnter', {
+      --   callback = function(data)
+      --     if vim.fn.isdirectory(data.file) ~= 0 then
+      --       require('neo-tree.command').execute { source = 'filesystem', dir = data.file }
+      --     else
+      --       require('neo-tree.command').execute {
+      --         action = 'show',
+      --         source = 'filesystem',
+      --         reveal = true,
+      --       }
+      --     end
+      --   end,
+      -- })
     end,
   },
 
